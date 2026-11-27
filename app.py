@@ -3,35 +3,33 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-from database import (
-    init_db,
-    save_prediction,
-    get_prediction_history,
-)
-from train_model import (
-    ensure_dataset,
-    train_or_load_model,
-    FEATURES,
-)
+from database import init_db, save_prediction, get_prediction_history
+from train_model import ensure_dataset, train_or_load_model, FEATURES
 
+# ==================================================
+# PAGE CONFIGURATION
+# ==================================================
 st.set_page_config(
-    page_title="Anime AI | Wine Quality Explorer",
+    page_title="Wine Quality Explorer",
     page_icon="🧪",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ==================================================
-# LIGHT ANIME THEME: HEADER AND BODY ARE SEPARATE
+# BLUE AND POWDER BLUE THEME
 # ==================================================
 st.markdown("""
 <style>
-/* MAIN BODY */
+/* BODY: POWDER BLUE */
 .stApp {
     background: linear-gradient(
-        135deg, #f5f3ff 0%, #eef7ff 52%, #fdf2f8 100%
-    );
-    color: #242044;
+        135deg,
+        #B0E0E6 0%,
+        #D9F0F7 50%,
+        #EAF8FF 100%
+    ) !important;
+    color: #17324D !important;
 }
 
 .block-container {
@@ -40,20 +38,23 @@ st.markdown("""
     padding-bottom: 3rem;
 }
 
-/* SEPARATE LIGHT PURPLE HEADER */
+/* HEADER: BLUE ACCENT */
 .hero-banner {
     background: linear-gradient(
-        115deg, #e9d5ff 0%, #ddd6fe 48%, #fbcfe8 100%
+        120deg,
+        #075985 0%,
+        #0284C7 50%,
+        #38BDF8 100%
     );
-    border: 1px solid #c084fc;
-    border-radius: 24px;
-    padding: 30px;
-    margin-bottom: 26px;
-    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.12);
+    border: 1px solid #0369A1;
+    border-radius: 22px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(3, 105, 161, 0.20);
 }
 
 .hero-tag {
-    color: #6d28d9;
+    color: #E0F2FE !important;
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 3px;
@@ -61,119 +62,132 @@ st.markdown("""
 }
 
 .hero-banner h1 {
-    color: #35105f !important;
+    color: #FFFFFF !important;
     font-size: 2.35rem;
     margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .hero-banner p {
-    color: #44315f !important;
+    color: #F0F9FF !important;
     font-size: 1.05rem;
     line-height: 1.7;
-    margin: 12px 0 0 0;
-}
-
-/* SIDEBAR */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #ede9fe, #f5f3ff);
-    border-right: 1px solid #d8b4fe;
+    margin: 12px 0 0;
 }
 
 /* GENERAL TEXT */
 h1, h2, h3 {
-    color: #5b21b6 !important;
+    color: #075985 !important;
 }
 
 p, label, .stMarkdown {
-    color: #30264a;
+    color: #17324D;
+}
+
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #D9F0F7,
+        #C6E8F3
+    ) !important;
+    border-right: 1px solid #7CC4E4;
 }
 
 /* METRIC CARDS */
 div[data-testid="stMetric"] {
-    background: #ffffff;
-    border: 1px solid #ddd6fe;
-    border-radius: 16px;
+    background: #FFFFFF !important;
+    border: 1px solid #9BD3EA;
+    border-radius: 15px;
     padding: 18px;
-    box-shadow: 0 4px 15px rgba(91, 33, 182, 0.07);
+    box-shadow: 0 4px 14px rgba(3, 105, 161, 0.08);
     transition: 0.2s ease;
 }
 
 div[data-testid="stMetric"]:hover {
-    border-color: #a78bfa;
-    box-shadow: 0 5px 18px rgba(124, 58, 237, 0.13);
+    border-color: #0284C7;
+    box-shadow: 0 5px 18px rgba(3, 105, 161, 0.16);
 }
 
 div[data-testid="stMetricLabel"] {
-    color: #6d28d9 !important;
+    color: #075985 !important;
 }
 
 div[data-testid="stMetricValue"] {
-    color: #251342 !important;
+    color: #102A43 !important;
 }
 
 /* TABS */
 div[data-testid="stTabs"] button[role="tab"] {
-    color: #5b3b85;
-    border-radius: 10px 10px 0 0;
+    color: #075985 !important;
+    border-radius: 8px 8px 0 0;
 }
 
 div[data-testid="stTabs"] button[role="tab"]:hover {
-    color: #7c3aed;
-    background: #ede9fe;
+    background: #D9F0F7 !important;
+    color: #0369A1 !important;
 }
 
 div[data-testid="stTabs"] button[aria-selected="true"] {
-    color: #6d28d9 !important;
-    border-bottom: 3px solid #a855f7 !important;
+    color: #0369A1 !important;
+    border-bottom: 3px solid #0284C7 !important;
 }
 
-/* PREDICTION FORM CARD */
+/* PREDICTION FORM */
 div[data-testid="stForm"] {
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid #d8b4fe;
+    background: rgba(255, 255, 255, 0.88) !important;
+    border: 1px solid #9BD3EA;
     border-radius: 18px;
     padding: 22px;
-    box-shadow: 0 5px 20px rgba(91, 33, 182, 0.06);
+    box-shadow: 0 5px 18px rgba(3, 105, 161, 0.07);
 }
 
-/* INPUT VALUES: DARK TEXT */
+/* INPUT VALUES: DARK TEXT ON WHITE */
 div[data-baseweb="input"] input,
 .stNumberInput input,
 .stTextInput input,
 .stTextArea textarea {
-    color: #21143d !important;
-    -webkit-text-fill-color: #21143d !important;
-    background-color: #ffffff !important;
+    color: #102A43 !important;
+    -webkit-text-fill-color: #102A43 !important;
+    background-color: #FFFFFF !important;
     font-weight: 600 !important;
     opacity: 1 !important;
 }
 
 div[data-baseweb="input"] {
-    background-color: #ffffff !important;
-    border: 1px solid #c4b5fd !important;
-    border-radius: 10px !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #7CC4E4 !important;
+    border-radius: 9px !important;
 }
 
+/* SELECT BOXES */
+div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
+    border-color: #7CC4E4 !important;
+    color: #102A43 !important;
+}
+
+/* INPUT LABELS */
 .stNumberInput label,
 .stSelectbox label,
 .stRadio label,
 .stMultiSelect label {
-    color: #45315f !important;
+    color: #17324D !important;
 }
 
-/* INPUT STEPPER BUTTONS */
-.stNumberInput button {
-    color: #6d28d9 !important;
-}
-
-/* BUTTONS */
+/* BUTTONS: BLUE ACCENT */
 .stButton > button,
 .stDownloadButton > button,
 div[data-testid="stFormSubmitButton"] button {
-    background: linear-gradient(100deg, #8b5cf6, #a855f7, #ec4899);
-    color: #ffffff !important;
-    border: 1px solid #a78bfa;
-    border-radius: 12px;
+    background: linear-gradient(
+        100deg,
+        #0369A1,
+        #0284C7,
+        #38BDF8
+    ) !important;
+    color: #FFFFFF !important;
+    border: 1px solid #0284C7 !important;
+    border-radius: 11px;
     font-weight: 700;
     transition: 0.2s ease;
 }
@@ -181,39 +195,44 @@ div[data-testid="stFormSubmitButton"] button {
 .stButton > button:hover,
 .stDownloadButton > button:hover,
 div[data-testid="stFormSubmitButton"] button:hover {
-    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
-    border-color: #7c3aed;
+    background: linear-gradient(
+        100deg,
+        #075985,
+        #0369A1
+    ) !important;
+    box-shadow: 0 4px 15px rgba(3, 105, 161, 0.22);
+    border-color: #075985 !important;
 }
 
-/* INFO BOX: PALE BLUE WITH DARK TEXT */
+/* INFO BOX: POWDER BLUE WITH DARK TEXT */
 div[data-testid="stAlert"] {
-    background: #e0f2fe !important;
-    border: 1px solid #7dd3fc !important;
+    background: #D9F0F7 !important;
+    border: 1px solid #7CC4E4 !important;
     border-radius: 12px;
 }
 
 div[data-testid="stAlert"] p,
 div[data-testid="stAlert"] [data-testid="stMarkdownContainer"],
 div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] p {
-    color: #12304a !important;
+    color: #17324D !important;
 }
 
-/* TABLE */
+/* DATA TABLE */
 div[data-testid="stDataFrame"] {
-    border: 1px solid #ddd6fe;
+    border: 1px solid #9BD3EA;
     border-radius: 12px;
     overflow: hidden;
 }
 
 /* DIVIDERS */
 hr {
-    border-color: #ddd6fe;
+    border-color: #9BD3EA;
 }
 
 /* FOOTER */
 .anime-footer {
     text-align: center;
-    color: #7c3aed;
+    color: #075985;
     padding: 24px 0 6px;
     font-size: 0.85rem;
     letter-spacing: 1px;
@@ -222,7 +241,7 @@ hr {
 /* MOBILE */
 @media (max-width: 768px) {
     .hero-banner {
-        padding: 20px;
+        padding: 22px;
     }
 
     .hero-banner h1 {
@@ -247,7 +266,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==================================================
-# DATA AND MODEL
+# LOAD DATA AND MODEL
 # ==================================================
 @st.cache_resource
 def setup_project():
@@ -260,7 +279,7 @@ try:
     data, model, metrics = setup_project()
 except Exception as exc:
     st.error("The app could not prepare its dataset or model.")
-    st.write("Check your dataset files, model setup, and packages.")
+    st.write("Check your dataset files, model configuration, and packages.")
     st.exception(exc)
     st.stop()
 
@@ -268,18 +287,18 @@ except Exception as exc:
 # SIDEBAR
 # ==================================================
 with st.sidebar:
-    st.markdown("## 🌸 ANIME AI LAB")
-    st.caption("WINE CHEMISTRY ANALYTICS")
+    st.markdown("## 🧪 WINE AI LAB")
+    st.caption("CHEMISTRY AND QUALITY ANALYTICS")
     st.divider()
 
-    st.markdown("### 🧬 About")
+    st.markdown("### About this project")
     st.write(
         "An educational machine learning project exploring "
         "wine chemistry and recorded quality scores."
     )
 
     st.divider()
-    st.markdown("### 📡 Model Statistics")
+    st.markdown("### Model Statistics")
     st.metric("Dataset records", f"{len(data):,}")
     st.metric("Test MAE", f"{metrics['mae']:.2f}")
     st.metric("Test R²", f"{metrics['r2']:.3f}")
@@ -298,10 +317,10 @@ tab_predict, tab_explore, tab_history, tab_about = st.tabs([
 ])
 
 # ==================================================
-# PREDICTION
+# PREDICT QUALITY
 # ==================================================
 with tab_predict:
-    st.subheader("🔮 Wine Quality Prediction")
+    st.subheader("🔬 Wine Quality Prediction")
     st.write(
         "Enter the 11 chemical measurements to obtain "
         "a model-based estimated quality score."
@@ -353,6 +372,7 @@ with tab_predict:
 
         for idx, feature in enumerate(FEATURES):
             lo, hi, step = ranges[feature]
+
             with cols[idx % 3]:
                 values[feature] = st.number_input(
                     feature.title(),
@@ -370,7 +390,7 @@ with tab_predict:
                 )
 
         submitted = st.form_submit_button(
-            "✨ Predict Wine Quality",
+            "🔵 Predict Wine Quality",
             type="primary",
             use_container_width=True,
         )
@@ -398,7 +418,7 @@ with tab_predict:
         )
 
         st.divider()
-        st.markdown("### ✨ Prediction Results")
+        st.subheader("✨ Prediction Results")
 
         c1, c2, c3 = st.columns(3)
         c1.metric("Estimated score", f"{prediction:.2f} / 10")
@@ -412,7 +432,7 @@ with tab_predict:
         )
 
 # ==================================================
-# DATASET EXPLORER
+# EXPLORE DATASET
 # ==================================================
 with tab_explore:
     st.subheader("📊 Explore Wine Chemistry")
@@ -455,16 +475,16 @@ with tab_explore:
                     "wine_type": "Wine color",
                 },
                 color_discrete_map={
-                    "Red": "#e11d48",
-                    "White": "#0891b2",
+                    "Red": "#E11D48",
+                    "White": "#0284C7",
                 },
                 template="plotly_white",
             )
             fig.update_layout(
                 paper_bgcolor="rgba(255,255,255,0)",
-                plot_bgcolor="rgba(255,255,255,0.65)",
-                title_font_color="#6d28d9",
-                font_color="#30264a",
+                plot_bgcolor="rgba(255,255,255,0.7)",
+                title_font_color="#075985",
+                font_color="#17324D",
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -480,16 +500,16 @@ with tab_explore:
                     "alcohol": "Alcohol (% by volume)",
                 },
                 color_discrete_map={
-                    "Red": "#e11d48",
-                    "White": "#0891b2",
+                    "Red": "#E11D48",
+                    "White": "#0284C7",
                 },
                 template="plotly_white",
             )
             fig.update_layout(
                 paper_bgcolor="rgba(255,255,255,0)",
-                plot_bgcolor="rgba(255,255,255,0.65)",
-                title_font_color="#6d28d9",
-                font_color="#30264a",
+                plot_bgcolor="rgba(255,255,255,0.7)",
+                title_font_color="#075985",
+                font_color="#17324D",
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -516,16 +536,16 @@ with tab_explore:
                 "wine_type": "Wine color",
             },
             color_discrete_map={
-                "Red": "#e11d48",
-                "White": "#0891b2",
+                "Red": "#E11D48",
+                "White": "#0284C7",
             },
             template="plotly_white",
         )
         fig.update_layout(
             paper_bgcolor="rgba(255,255,255,0)",
-            plot_bgcolor="rgba(255,255,255,0.65)",
-            title_font_color="#6d28d9",
-            font_color="#30264a",
+            plot_bgcolor="rgba(255,255,255,0.7)",
+            title_font_color="#075985",
+            font_color="#17324D",
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -565,16 +585,16 @@ with tab_history:
                 "wine_type": "Wine color",
             },
             color_discrete_map={
-                "Red": "#e11d48",
-                "White": "#0891b2",
+                "Red": "#E11D48",
+                "White": "#0284C7",
             },
             template="plotly_white",
         )
         fig.update_layout(
             paper_bgcolor="rgba(255,255,255,0)",
-            plot_bgcolor="rgba(255,255,255,0.65)",
-            title_font_color="#6d28d9",
-            font_color="#30264a",
+            plot_bgcolor="rgba(255,255,255,0.7)",
+            title_font_color="#075985",
+            font_color="#17324D",
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -589,10 +609,10 @@ with tab_history:
 # PROJECT DETAILS
 # ==================================================
 with tab_about:
-    st.subheader("ℹ️ Inside the AI Laboratory")
+    st.subheader("ℹ️ Project Details")
 
     st.markdown("""
-    ### 🧠 How the application works
+    ### How the application works
 
     **01 — Dataset preparation**
 
@@ -616,17 +636,17 @@ with tab_about:
 
     ---
 
-    ### 🧪 Scientific note
+    ### Scientific note
 
     The model learns patterns from historical human-assigned
     quality scores. Predictions are estimates, not laboratory
-    measurements or official certification.
+    measurements or official certifications.
     """)
 
-    st.markdown("### 🔬 Model input features")
+    st.markdown("### Model input features")
     st.write(", ".join(FEATURES))
 
-    st.markdown("### 📚 Dataset source")
+    st.markdown("### Dataset source")
     st.link_button(
         "Open UCI Wine Quality Dataset",
         "https://archive.ics.uci.edu/dataset/186/wine+quality",
