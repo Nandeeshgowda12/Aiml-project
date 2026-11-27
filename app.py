@@ -211,9 +211,27 @@ st.markdown(
         border-radius: 10px;
     }
 
-    input, textarea {
-        color: #ffffff !important;
-    }
+    
+input, textarea {
+    color: #17132b !important;
+    -webkit-text-fill-color: #17132b !important;
+    background-color: #ffffff !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+}
+
+div[data-testid="stAlert"] p,
+div[data-testid="stAlert"] div {
+    color: #202044 !important;
+}
+
+.stNumberInput label,
+.stSelectbox label,
+.stRadio label,
+.stMultiSelect label {
+    color: #e9ddff !important;
+}
+
 
     /* Info, success and warning messages */
     div[data-testid="stAlert"] {
