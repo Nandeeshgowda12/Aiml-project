@@ -17,9 +17,9 @@ from train_model import (
     DATA_DIR,
 )
 
-# --------------------------------------------------
+# ==================================================
 # PAGE CONFIGURATION
-# --------------------------------------------------
+# ==================================================
 st.set_page_config(
     page_title="Anime AI | Wine Quality Explorer",
     page_icon="🧪",
@@ -27,120 +27,122 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --------------------------------------------------
-# ANIME / FUTURISTIC THEME
-# --------------------------------------------------
+# ==================================================
+# SEPARATE HEADER AND BODY THEME
+# ==================================================
 st.markdown(
     """
     <style>
-    /* Main background */
+    /* ---------- MAIN BODY BACKGROUND ---------- */
     .stApp {
         background:
             radial-gradient(
-                circle at 5% 5%,
-                rgba(139, 92, 246, 0.20),
+                circle at 90% 15%,
+                rgba(14, 165, 233, 0.13),
                 transparent 30%
-            ),
-            radial-gradient(
-                circle at 95% 75%,
-                rgba(6, 182, 212, 0.16),
-                transparent 32%
             ),
             linear-gradient(
                 135deg,
-                #080b18 0%,
-                #11132a 48%,
-                #101d35 100%
+                #070b18 0%,
+                #0d1530 55%,
+                #101c35 100%
             );
-        color: #f4f2ff;
+        color: #f8fafc;
     }
 
-    /* Main page spacing */
     .block-container {
-        padding-top: 1.8rem;
-        padding-bottom: 3rem;
         max-width: 1500px;
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
     }
 
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(
-            180deg,
-            #17112e 0%,
-            #10172b 55%,
-            #09101f 100%
-        );
-        border-right: 1px solid rgba(139, 92, 246, 0.45);
-    }
-
-    /* Main title and headings */
-    h1, h2, h3 {
-        color: #e3d5ff !important;
-        letter-spacing: 0.3px;
-    }
-
-    h1 {
-        text-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
-    }
-
-    /* Paragraphs and labels */
-    p, label, .stMarkdown {
-        color: #e4e8ff;
-    }
-
-    /* Anime-inspired hero banner */
+    /* ---------- SEPARATE HEADER BANNER ---------- */
     .hero-banner {
-        background: linear-gradient(
-            120deg,
-            rgba(124, 58, 237, 0.25),
-            rgba(8, 145, 178, 0.18),
-            rgba(219, 39, 119, 0.12)
-        );
-        border: 1px solid rgba(167, 139, 250, 0.55);
-        border-radius: 22px;
-        padding: 28px 30px;
-        margin: 12px 0 24px 0;
-        box-shadow: 0 0 25px rgba(99, 102, 241, 0.12);
-    }
-
-    .hero-banner h1 {
-        margin: 0;
-        font-size: 2.1rem;
-        color: #ffffff !important;
-    }
-
-    .hero-banner p {
-        color: #cbd5ff;
-        margin-top: 10px;
-        margin-bottom: 0;
-        font-size: 1rem;
+        background:
+            radial-gradient(
+                circle at 90% 15%,
+                rgba(236, 72, 153, 0.30),
+                transparent 35%
+            ),
+            linear-gradient(
+                120deg,
+                #32105c 0%,
+                #512080 45%,
+                #182d59 100%
+            );
+        border: 1px solid #a855f7;
+        border-radius: 24px;
+        padding: 32px;
+        margin-bottom: 28px;
+        box-shadow:
+            0 0 22px rgba(168, 85, 247, 0.22),
+            inset 0 0 24px rgba(236, 72, 153, 0.07);
     }
 
     .hero-tag {
         color: #67e8f9;
-        font-size: 0.78rem;
-        letter-spacing: 3px;
+        font-size: 12px;
         font-weight: 800;
-        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 12px;
     }
 
-    /* Metric cards */
+    .hero-banner h1 {
+        color: #ffffff !important;
+        font-size: 2.4rem;
+        margin: 0;
+        text-shadow: 0 0 16px rgba(216, 180, 254, 0.4);
+    }
+
+    .hero-banner p {
+        color: #f3e8ff !important;
+        font-size: 1.05rem;
+        margin-top: 12px;
+        margin-bottom: 0;
+        line-height: 1.7;
+    }
+
+    /* ---------- SIDEBAR ---------- */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(
+            180deg,
+            #1b1035,
+            #10172b,
+            #080d1b
+        );
+        border-right: 1px solid #58318a;
+    }
+
+    /* ---------- BODY HEADINGS ---------- */
+    h1, h2, h3 {
+        color: #d8b4fe !important;
+    }
+
+    h2, h3 {
+        text-shadow: 0 0 10px rgba(139, 92, 246, 0.16);
+    }
+
+    p, label, .stMarkdown {
+        color: #e2e8f0;
+    }
+
+    /* ---------- METRIC CARDS ---------- */
     div[data-testid="stMetric"] {
         background: linear-gradient(
             145deg,
-            rgba(38, 33, 75, 0.92),
-            rgba(16, 31, 55, 0.92)
+            #191d3c,
+            #10243b
         );
-        border: 1px solid rgba(139, 92, 246, 0.55);
+        border: 1px solid #6741a5;
         border-radius: 16px;
         padding: 18px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
         transition: all 0.25s ease;
     }
 
     div[data-testid="stMetric"]:hover {
         border-color: #67e8f9;
-        box-shadow: 0 0 18px rgba(103, 232, 249, 0.17);
+        box-shadow: 0 0 18px rgba(103, 232, 249, 0.18);
         transform: translateY(-2px);
     }
 
@@ -152,12 +154,11 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* Tabs */
+    /* ---------- TABS ---------- */
     div[data-testid="stTabs"] button[role="tab"] {
-        color: #c4b5fd;
+        color: #ddd6fe;
         border-radius: 10px 10px 0 0;
-        padding: 12px 16px;
-        transition: all 0.2s ease;
+        padding: 12px 14px;
     }
 
     div[data-testid="stTabs"] button[role="tab"]:hover {
@@ -167,22 +168,60 @@ st.markdown(
 
     div[data-testid="stTabs"] button[aria-selected="true"] {
         color: #67e8f9 !important;
-        border-bottom: 3px solid #a78bfa !important;
+        border-bottom: 3px solid #c084fc !important;
         background: rgba(139, 92, 246, 0.10);
     }
 
-    /* Buttons */
+    /* ---------- FORM CARD ---------- */
+    div[data-testid="stForm"] {
+        background: linear-gradient(
+            145deg,
+            rgba(21, 27, 57, 0.96),
+            rgba(13, 27, 48, 0.96)
+        );
+        border: 1px solid #513780;
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    }
+
+    /* ---------- INPUT VALUES: DARK TEXT ON WHITE ---------- */
+    div[data-baseweb="input"] input,
+    .stNumberInput input,
+    .stTextInput input,
+    .stTextArea textarea {
+        color: #17132b !important;
+        -webkit-text-fill-color: #17132b !important;
+        background-color: #ffffff !important;
+        font-weight: 600 !important;
+        opacity: 1 !important;
+    }
+
+    div[data-baseweb="input"] {
+        border: 1px solid #a78bfa;
+        border-radius: 10px;
+    }
+
+    /* Input labels */
+    .stNumberInput label,
+    .stSelectbox label,
+    .stRadio label,
+    .stMultiSelect label {
+        color: #e9ddff !important;
+    }
+
+    /* ---------- BUTTONS ---------- */
     .stButton > button,
     .stDownloadButton > button,
     div[data-testid="stFormSubmitButton"] button {
         background: linear-gradient(
             100deg,
-            #7c3aed,
-            #4f46e5,
+            #9333ea,
+            #6366f1,
             #0891b2
         );
         color: #ffffff !important;
-        border: 1px solid rgba(196, 181, 253, 0.45);
+        border: 1px solid #a78bfa;
         border-radius: 12px;
         font-weight: 700;
         transition: all 0.25s ease;
@@ -192,86 +231,48 @@ st.markdown(
     .stDownloadButton > button:hover,
     div[data-testid="stFormSubmitButton"] button:hover {
         border-color: #67e8f9;
-        box-shadow: 0 0 20px rgba(103, 232, 249, 0.30);
+        box-shadow: 0 0 18px rgba(103, 232, 249, 0.30);
         transform: translateY(-2px);
     }
 
-    /* Form containers */
-    div[data-testid="stForm"] {
-        background: rgba(18, 22, 48, 0.68);
-        border: 1px solid rgba(139, 92, 246, 0.40);
-        border-radius: 18px;
-        padding: 22px;
-    }
-
-    /* Input fields */
-    div[data-baseweb="input"],
-    div[data-baseweb="select"],
-    div[data-baseweb="textarea"] {
-        border-radius: 10px;
-    }
-
-    
-input, textarea {
-    color: #17132b !important;
-    -webkit-text-fill-color: #17132b !important;
-    background-color: #ffffff !important;
-    font-weight: 600 !important;
-    opacity: 1 !important;
-}
-
-div[data-testid="stAlert"] p,
-div[data-testid="stAlert"] div {
-    color: #202044 !important;
-}
-
-.stNumberInput label,
-.stSelectbox label,
-.stRadio label,
-.stMultiSelect label {
-    color: #e9ddff !important;
-}
-
-
-    /* Info, success and warning messages */
+    /* ---------- ALERTS ---------- */
     div[data-testid="stAlert"] {
         border-radius: 12px;
-        border: 1px solid rgba(139, 92, 246, 0.30);
     }
 
-    /* Data tables */
+    /* ---------- TABLES ---------- */
     div[data-testid="stDataFrame"] {
-        border: 1px solid rgba(139, 92, 246, 0.38);
+        border: 1px solid #513780;
         border-radius: 12px;
         overflow: hidden;
     }
 
-    /* Dividers */
+    /* ---------- DIVIDERS ---------- */
     hr {
-        border-color: rgba(139, 92, 246, 0.35);
+        border-color: rgba(167, 139, 250, 0.35);
     }
 
-    /* Small footer */
+    /* ---------- FOOTER ---------- */
     .anime-footer {
         text-align: center;
         color: #a5b4fc;
+        padding: 24px 0 6px;
         font-size: 0.85rem;
-        padding: 22px 0 5px 0;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
     }
 
-    /* Keep the design responsive on small screens */
+    /* ---------- MOBILE VIEW ---------- */
     @media (max-width: 768px) {
         .hero-banner {
-            padding: 20px;
+            padding: 22px;
         }
 
         .hero-banner h1 {
-            font-size: 1.55rem;
+            font-size: 1.7rem;
         }
 
-        .block-container {
-            padding-top: 1rem;
+        .hero-banner p {
+            font-size: 0.95rem;
         }
     }
     </style>
@@ -279,13 +280,15 @@ div[data-testid="stAlert"] div {
     unsafe_allow_html=True,
 )
 
-# --------------------------------------------------
-# HEADER
-# --------------------------------------------------
+# ==================================================
+# HEADER SECTION
+# ==================================================
 st.markdown(
     """
     <div class="hero-banner">
-        <div class="hero-tag">✦ NEXT-GEN MACHINE LEARNING LAB ✦</div>
+        <div class="hero-tag">
+            ✦ NEXT-GEN MACHINE LEARNING LAB ✦
+        </div>
         <h1>🧪 Wine Quality Explorer</h1>
         <p>
             Decode wine chemistry, explore data patterns, and predict
@@ -296,9 +299,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --------------------------------------------------
-# LOAD DATASET AND MODEL
-# --------------------------------------------------
+# ==================================================
+# LOAD DATA AND MODEL
+# ==================================================
 @st.cache_resource
 def setup_project():
     init_db()
@@ -309,49 +312,47 @@ def setup_project():
 
 try:
     data, model, metrics = setup_project()
-
 except Exception as exc:
     st.error("The app could not prepare its dataset or model.")
     st.write(
-        "Please check that your data files, model code, "
-        "and required packages are configured correctly."
+        "Check your data files, model configuration, "
+        "and required Python packages."
     )
     st.exception(exc)
     st.stop()
 
-# --------------------------------------------------
+# ==================================================
 # SIDEBAR
-# --------------------------------------------------
+# ==================================================
 with st.sidebar:
-    st.markdown("## 🌌 AI LAB")
-    st.caption("ANIME-INSPIRED ANALYTICS")
-
+    st.markdown("## 🌌 ANIME AI LAB")
+    st.caption("WINE CHEMISTRY ANALYTICS")
     st.divider()
 
-    st.markdown("### 🧬 About this project")
+    st.markdown("### 🧬 About")
     st.write(
-        "An educational machine learning project exploring "
-        "the relationship between wine chemistry and recorded quality."
+        "An educational project exploring the relationship "
+        "between wine chemistry and recorded quality scores."
     )
 
     st.divider()
+    st.markdown("### 📡 Model Statistics")
 
-    st.markdown("### 📡 Model status")
     st.metric("Dataset records", f"{len(data):,}")
     st.metric("Test MAE", f"{metrics['mae']:.2f}")
     st.metric("Test R²", f"{metrics['r2']:.3f}")
 
     st.caption(
         "MAE measures average prediction error. "
-        "R² describes model fit on the test data."
+        "R² summarizes model fit on test data."
     )
 
     st.divider()
-    st.caption("⚡ Powered by Python · Streamlit · Random Forest")
+    st.caption("Python · Streamlit · Random Forest")
 
-# --------------------------------------------------
-# NAVIGATION TABS
-# --------------------------------------------------
+# ==================================================
+# NAVIGATION
+# ==================================================
 tab_predict, tab_explore, tab_history, tab_about = st.tabs(
     [
         "🔬 Predict Quality",
@@ -361,13 +362,13 @@ tab_predict, tab_explore, tab_history, tab_about = st.tabs(
     ]
 )
 
-# --------------------------------------------------
-# TAB 1: PREDICTION
-# --------------------------------------------------
+# ==================================================
+# TAB 1: PREDICT QUALITY
+# ==================================================
 with tab_predict:
     st.subheader("🔮 Wine Quality Prediction")
     st.write(
-        "Enter the 11 chemical measurements below to get "
+        "Enter the 11 chemical measurements to obtain "
         "a model-based estimated quality score."
     )
 
@@ -379,7 +380,7 @@ with tab_predict:
     )
 
     st.info(
-        "Use the measurement units represented in the dataset. "
+        "Enter measurements in the units used by the dataset. "
         "The model requires all 11 chemistry features."
     )
 
@@ -472,35 +473,23 @@ with tab_predict:
         st.markdown("### ✨ Prediction Results")
 
         c1, c2, c3 = st.columns(3)
-
-        c1.metric(
-            "Estimated quality score",
-            f"{prediction:.2f} / 10",
-        )
-        c2.metric(
-            "Rounded score",
-            str(rounded_score),
-        )
-        c3.metric(
-            "Estimated grade",
-            grade,
-        )
+        c1.metric("Estimated score", f"{prediction:.2f} / 10")
+        c2.metric("Rounded score", str(rounded_score))
+        c3.metric("Estimated grade", grade)
 
         st.success("Prediction saved to the database.")
-
         st.caption(
-            "These are model estimates based on historical dataset "
-            "patterns, not laboratory results or official certification."
+            "The grade is a project-defined interpretation of the "
+            "model's estimate, not official certification."
         )
 
-# --------------------------------------------------
-# TAB 2: DATA EXPLORATION
-# --------------------------------------------------
+# ==================================================
+# TAB 2: EXPLORE DATASET
+# ==================================================
 with tab_explore:
     st.subheader("📊 Explore Wine Chemistry")
 
     c1, c2, c3 = st.columns(3)
-
     c1.metric("Total records", f"{len(data):,}")
     c2.metric(
         "Red wine records",
@@ -523,7 +512,6 @@ with tab_explore:
 
     if filtered.empty:
         st.warning("Select at least one wine color.")
-
     else:
         left, right = st.columns(2)
 
@@ -544,15 +532,12 @@ with tab_explore:
                 },
                 template="plotly_dark",
             )
-
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(12,16,35,0.65)",
-                legend_title_text="Wine color",
                 title_font_color="#d8b4fe",
                 font_color="#e4e8ff",
             )
-
             st.plotly_chart(fig, use_container_width=True)
 
         with right:
@@ -572,20 +557,18 @@ with tab_explore:
                 },
                 template="plotly_dark",
             )
-
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(12,16,35,0.65)",
                 title_font_color="#d8b4fe",
                 font_color="#e4e8ff",
             )
-
             st.plotly_chart(fig, use_container_width=True)
 
         st.divider()
 
         feature_choice = st.selectbox(
-            "Select a chemical feature",
+            "Explore a chemical feature",
             FEATURES,
             index=FEATURES.index("alcohol"),
         )
@@ -612,14 +595,12 @@ with tab_explore:
             },
             template="plotly_dark",
         )
-
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(12,16,35,0.65)",
             title_font_color="#d8b4fe",
             font_color="#e4e8ff",
         )
-
         st.plotly_chart(fig, use_container_width=True)
 
         with st.expander("📁 View dataset records"):
@@ -629,12 +610,12 @@ with tab_explore:
                 hide_index=True,
             )
 
-# --------------------------------------------------
+# ==================================================
 # TAB 3: PREDICTION HISTORY
-# --------------------------------------------------
+# ==================================================
 with tab_history:
     st.subheader("🗂️ Prediction History")
-    st.write("Review your previously saved model predictions.")
+    st.write("Review previously saved model predictions.")
 
     history = get_prediction_history()
 
@@ -643,7 +624,6 @@ with tab_history:
             "No predictions saved yet. "
             "Make a prediction in the first tab."
         )
-
     else:
         st.dataframe(
             history,
@@ -669,14 +649,12 @@ with tab_history:
             },
             template="plotly_dark",
         )
-
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(12,16,35,0.65)",
             title_font_color="#d8b4fe",
             font_color="#e4e8ff",
         )
-
         st.plotly_chart(fig, use_container_width=True)
 
         st.download_button(
@@ -686,9 +664,9 @@ with tab_history:
             mime="text/csv",
         )
 
-# --------------------------------------------------
+# ==================================================
 # TAB 4: PROJECT DETAILS
-# --------------------------------------------------
+# ==================================================
 with tab_about:
     st.subheader("ℹ️ Inside the AI Laboratory")
 
@@ -697,55 +675,53 @@ with tab_about:
         ### 🧠 How the application works
 
         **01 — Dataset preparation**
-        
-        Loads and combines the red and white wine chemistry records.
+
+        Loads and combines red and white wine chemistry records.
 
         **02 — Feature processing**
-        
+
         Uses 11 numeric physicochemical measurements as model inputs.
 
         **03 — Machine learning**
-        
+
         A Random Forest regression model estimates quality scores
-        from patterns learned in the training data.
+        from patterns learned in historical records.
 
         **04 — Model evaluation**
-        
-        MAE and R² help summarize model performance on held-out data.
+
+        MAE and R² summarize performance on held-out test data.
 
         **05 — Prediction history**
-        
+
         Predictions are saved to SQLite for later review.
 
         ---
 
-        ### 🧪 Important scientific note
+        ### 🧪 Scientific note
 
-        The model learns from historical, human-assigned quality scores.
-        Its predictions are estimates and are not a substitute for
-        professional evaluation or laboratory analysis.
+        Quality scores in the source dataset are human-assigned.
+        Predictions are estimates, not laboratory measurements or
+        official wine certifications.
         """
     )
 
     st.markdown("### 🔬 Model input features")
-
     st.write(", ".join(FEATURES))
 
     st.markdown("### 📚 Dataset source")
-
     st.link_button(
         "Open UCI Wine Quality Dataset",
         "https://archive.ics.uci.edu/dataset/186/wine+quality",
     )
 
     st.caption(
-        "Project built with Python, Streamlit, Pandas, Plotly, "
+        "Built with Python, Streamlit, Pandas, Plotly, "
         "scikit-learn, and SQLite."
     )
 
-# --------------------------------------------------
+# ==================================================
 # FOOTER
-# --------------------------------------------------
+# ==================================================
 st.markdown(
     """
     <div class="anime-footer">
