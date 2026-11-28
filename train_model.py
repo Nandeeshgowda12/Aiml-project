@@ -35,8 +35,8 @@ TARGET = "quality"
 def ensure_dataset():
     """Load the red and white datasets from the local data folder."""
 
-    red_path = DATA_DIR / "redwine.csv"
-    white_path = DATA_DIR / "whitewine.csv"
+    red = pd.read_csv(red_path, sep=";")
+white = pd.read_csv(white_path, sep=";")
 
     if not red_path.exists():
         raise FileNotFoundError(
