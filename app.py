@@ -1,4 +1,3 @@
-
 import pandas as pd
 import streamlit as st
 import plotly.express as px
@@ -9,6 +8,7 @@ from database import (
     get_prediction_history,
     get_dataset_summary,
 )
+
 from train_model import (
     ensure_dataset,
     train_or_load_model,
@@ -21,127 +21,157 @@ from train_model import (
 # PAGE CONFIGURATION
 # --------------------------------------------------
 st.set_page_config(
-    page_title="Anime AI | Wine Quality Explorer",
+    page_title="Wine Quality Explorer",
     page_icon="🧪",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # --------------------------------------------------
-# ANIME / FUTURISTIC THEME
+# RESPONSIVE DARK THEME
 # --------------------------------------------------
 st.markdown(
     """
     <style>
-    /* Main background */
+    /* ==========================================
+       GLOBAL THEME
+       ========================================== */
+
+    :root {
+        color-scheme: dark;
+    }
+
     .stApp {
         background:
             radial-gradient(
-                circle at 5% 5%,
-                rgba(139, 92, 246, 0.20),
-                transparent 30%
+                ellipse at top left,
+                rgba(124, 58, 237, 0.20),
+                transparent 42%
             ),
             radial-gradient(
-                circle at 95% 75%,
-                rgba(6, 182, 212, 0.16),
-                transparent 32%
+                ellipse at bottom right,
+                rgba(8, 145, 178, 0.15),
+                transparent 40%
             ),
             linear-gradient(
                 135deg,
-                #080b18 0%,
-                #11132a 48%,
-                #101d35 100%
+                #0b1020 0%,
+                #11152b 55%,
+                #10243a 100%
             );
-        color: #f4f2ff;
+
+        color: #f1f5ff;
     }
 
-    /* Main page spacing */
+    /* Keep content comfortable on laptops and phones */
     .block-container {
-        padding-top: 1.8rem;
-        padding-bottom: 3rem;
+        width: 100%;
         max-width: 1500px;
+        padding: 1.5rem 2rem 3rem 2rem;
     }
 
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(
-            180deg,
-            #17112e 0%,
-            #10172b 55%,
-            #09101f 100%
-        );
-        border-right: 1px solid rgba(139, 92, 246, 0.45);
+    /* ==========================================
+       HEADINGS AND TEXT
+       ========================================== */
+
+    h1, h2, h3, h4 {
+        color: #e9ddff !important;
     }
 
-    /* Main title and headings */
-    h1, h2, h3 {
-        color: #e3d5ff !important;
-        letter-spacing: 0.3px;
+    p, li {
+        color: #e2e8f0;
     }
 
-    h1 {
-        text-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
+    label,
+    [data-testid="stWidgetLabel"] p {
+        color: #f1eaff !important;
     }
 
-    /* Paragraphs and labels */
-    p, label, .stMarkdown {
-        color: #e4e8ff;
+    .stCaption,
+    [data-testid="stCaptionContainer"] p {
+        color: #bdc9e3 !important;
     }
 
-    /* Anime-inspired hero banner */
+    /* ==========================================
+       HERO BANNER
+       ========================================== */
+
     .hero-banner {
         background: linear-gradient(
             120deg,
-            rgba(124, 58, 237, 0.25),
-            rgba(8, 145, 178, 0.18),
-            rgba(219, 39, 119, 0.12)
+            rgba(109, 40, 217, 0.30),
+            rgba(8, 145, 178, 0.20),
+            rgba(190, 24, 93, 0.12)
         );
-        border: 1px solid rgba(167, 139, 250, 0.55);
-        border-radius: 22px;
-        padding: 28px 30px;
-        margin: 12px 0 24px 0;
-        box-shadow: 0 0 25px rgba(99, 102, 241, 0.12);
+
+        border: 1px solid #6552a5;
+        border-radius: 20px;
+        padding: 26px 28px;
+        margin: 0 0 24px 0;
+
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+
+        overflow-wrap: anywhere;
     }
 
     .hero-banner h1 {
-        margin: 0;
-        font-size: 2.1rem;
         color: #ffffff !important;
+        font-size: 2.1rem;
+        line-height: 1.25;
+        margin: 10px 0;
+        text-shadow: none;
     }
 
     .hero-banner p {
-        color: #cbd5ff;
-        margin-top: 10px;
-        margin-bottom: 0;
+        color: #e1eaff !important;
         font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 0;
     }
 
     .hero-tag {
         color: #67e8f9;
-        font-size: 0.78rem;
-        letter-spacing: 3px;
+        font-size: 0.75rem;
         font-weight: 800;
+        letter-spacing: 2px;
         text-transform: uppercase;
     }
 
-    /* Metric cards */
+    /* ==========================================
+       SIDEBAR
+       ========================================== */
+
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(
+            180deg,
+            #17132d,
+            #101a2d
+        );
+
+        border-right: 1px solid #40386b;
+    }
+
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] label {
+        color: #e7eaff !important;
+    }
+
+    /* ==========================================
+       METRIC CARDS
+       ========================================== */
+
     div[data-testid="stMetric"] {
         background: linear-gradient(
             145deg,
-            rgba(38, 33, 75, 0.92),
-            rgba(16, 31, 55, 0.92)
+            #201b40,
+            #14263d
         );
-        border: 1px solid rgba(139, 92, 246, 0.55);
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
-        transition: all 0.25s ease;
-    }
 
-    div[data-testid="stMetric"]:hover {
-        border-color: #67e8f9;
-        box-shadow: 0 0 18px rgba(103, 232, 249, 0.17);
-        transform: translateY(-2px);
+        border: 1px solid #514582;
+        border-radius: 14px;
+        padding: 16px;
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
 
     div[data-testid="stMetricLabel"] {
@@ -150,128 +180,301 @@ st.markdown(
 
     div[data-testid="stMetricValue"] {
         color: #ffffff !important;
+        overflow-wrap: anywhere;
     }
 
-    /* Tabs */
+    /* ==========================================
+       TABS
+       ========================================== */
+
     div[data-testid="stTabs"] button[role="tab"] {
-        color: #c4b5fd;
-        border-radius: 10px 10px 0 0;
-        padding: 12px 16px;
-        transition: all 0.2s ease;
+        color: #e2d9ff !important;
+        border-radius: 8px 8px 0 0;
+        padding: 10px 12px;
+        white-space: normal;
     }
 
     div[data-testid="stTabs"] button[role="tab"]:hover {
-        color: #67e8f9;
-        background: rgba(139, 92, 246, 0.12);
+        color: #67e8f9 !important;
+        background: rgba(139, 92, 246, 0.14);
     }
 
     div[data-testid="stTabs"] button[aria-selected="true"] {
         color: #67e8f9 !important;
         border-bottom: 3px solid #a78bfa !important;
-        background: rgba(139, 92, 246, 0.10);
+        background: rgba(139, 92, 246, 0.14);
     }
 
-    /* Buttons */
+    /* ==========================================
+       INPUT FIELDS
+       White input backgrounds with dark text
+       ========================================== */
+
+    div[data-baseweb="input"] {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 9px !important;
+    }
+
+    div[data-baseweb="input"] input {
+        background: #ffffff !important;
+        color: #172033 !important;
+        -webkit-text-fill-color: #172033 !important;
+        caret-color: #6d28d9 !important;
+        font-weight: 600 !important;
+        opacity: 1 !important;
+    }
+
+    div[data-baseweb="input"] input::placeholder {
+        color: #64748b !important;
+        -webkit-text-fill-color: #64748b !important;
+        opacity: 1 !important;
+    }
+
+    /* Number input +/- controls */
+    div[data-testid="stNumberInput"] button {
+        color: #ffffff !important;
+        background: #28354a !important;
+        border-color: #475569 !important;
+    }
+
+    div[data-testid="stNumberInput"] button:hover {
+        background: #51418b !important;
+        border-color: #a78bfa !important;
+    }
+
+    /* Select boxes */
+    div[data-baseweb="select"] > div {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        border-radius: 9px !important;
+    }
+
+    div[data-baseweb="select"] * {
+        color: #172033 !important;
+    }
+
+    /* Dropdown menu */
+    div[role="listbox"],
+    li[role="option"] {
+        background: #ffffff !important;
+        color: #172033 !important;
+    }
+
+    li[role="option"]:hover {
+        background: #ede9fe !important;
+    }
+
+    /* Text areas */
+    div[data-baseweb="textarea"] {
+        background: #ffffff !important;
+        border-radius: 9px !important;
+    }
+
+    div[data-baseweb="textarea"] textarea {
+        background: #ffffff !important;
+        color: #172033 !important;
+        -webkit-text-fill-color: #172033 !important;
+        caret-color: #6d28d9 !important;
+    }
+
+    /* Radio buttons and checkboxes */
+    div[data-testid="stRadio"] label,
+    div[data-testid="stCheckbox"] label {
+        color: #f1eaff !important;
+    }
+
+    /* ==========================================
+       BUTTONS
+       ========================================== */
+
     .stButton > button,
     .stDownloadButton > button,
-    div[data-testid="stFormSubmitButton"] button {
+    div[data-testid="stFormSubmitButton"] button,
+    div[data-testid="stLinkButton"] a {
         background: linear-gradient(
             100deg,
             #7c3aed,
             #4f46e5,
-            #0891b2
-        );
+            #087ea4
+        ) !important;
+
         color: #ffffff !important;
-        border: 1px solid rgba(196, 181, 253, 0.45);
-        border-radius: 12px;
-        font-weight: 700;
-        transition: all 0.25s ease;
+        border: 1px solid #8171c7 !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        min-height: 42px;
+        transition: background 0.2s ease;
+    }
+
+    .stButton > button *,
+    .stDownloadButton > button * {
+        color: #ffffff !important;
     }
 
     .stButton > button:hover,
     .stDownloadButton > button:hover,
     div[data-testid="stFormSubmitButton"] button:hover {
-        border-color: #67e8f9;
-        box-shadow: 0 0 20px rgba(103, 232, 249, 0.30);
-        transform: translateY(-2px);
+        background: linear-gradient(
+            100deg,
+            #6d28d9,
+            #3730a3,
+            #0e7490
+        ) !important;
+
+        border-color: #67e8f9 !important;
     }
 
-    /* Form containers */
+    /* ==========================================
+       FORM CONTAINERS
+       ========================================== */
+
     div[data-testid="stForm"] {
-        background: rgba(18, 22, 48, 0.68);
-        border: 1px solid rgba(139, 92, 246, 0.40);
-        border-radius: 18px;
-        padding: 22px;
+        background: rgba(17, 24, 48, 0.90);
+        border: 1px solid #514582;
+        border-radius: 16px;
+        padding: 20px;
     }
 
-    /* Input fields */
-    div[data-baseweb="input"],
-    div[data-baseweb="select"],
-    div[data-baseweb="textarea"] {
-        border-radius: 10px;
-    }
+    /* ==========================================
+       ALERTS
+       Light message boxes always use dark text
+       ========================================== */
 
-    
-input, textarea {
-    color: #17132b !important;
-    -webkit-text-fill-color: #17132b !important;
-    background-color: #ffffff !important;
-    font-weight: 600 !important;
-    opacity: 1 !important;
-}
-
-div[data-testid="stAlert"] p,
-div[data-testid="stAlert"] div {
-    color: #202044 !important;
-}
-
-.stNumberInput label,
-.stSelectbox label,
-.stRadio label,
-.stMultiSelect label {
-    color: #e9ddff !important;
-}
-
-
-    /* Info, success and warning messages */
     div[data-testid="stAlert"] {
-        border-radius: 12px;
-        border: 1px solid rgba(139, 92, 246, 0.30);
+        background: #edf4ff !important;
+        border: 1px solid #b9c9e6 !important;
+        border-radius: 10px !important;
     }
 
-    /* Data tables */
+    div[data-testid="stAlert"] p,
+    div[data-testid="stAlert"] span,
+    div[data-testid="stAlert"] div {
+        color: #1e293b !important;
+    }
+
+    /* ==========================================
+       DATA TABLES
+       ========================================== */
+
     div[data-testid="stDataFrame"] {
-        border: 1px solid rgba(139, 92, 246, 0.38);
-        border-radius: 12px;
+        border: 1px solid #514582;
+        border-radius: 10px;
         overflow: hidden;
     }
 
-    /* Dividers */
-    hr {
-        border-color: rgba(139, 92, 246, 0.35);
+    /* ==========================================
+       PLOTLY CHARTS
+       ========================================== */
+
+    div[data-testid="stPlotlyChart"] {
+        width: 100%;
+        min-width: 0;
     }
 
-    /* Small footer */
+    /* ==========================================
+       FOOTER
+       ========================================== */
+
     .anime-footer {
         text-align: center;
-        color: #a5b4fc;
+        color: #c4b5fd;
         font-size: 0.85rem;
         padding: 22px 0 5px 0;
-        letter-spacing: 0.5px;
+        line-height: 1.7;
     }
 
-    /* Keep the design responsive on small screens */
+    hr {
+        border-color: #40386b !important;
+    }
+
+    /* ==========================================
+       MOBILE RESPONSIVE STYLES
+       ========================================== */
+
     @media (max-width: 768px) {
+        .block-container {
+            padding: 1rem 0.8rem 2rem 0.8rem;
+        }
+
         .hero-banner {
-            padding: 20px;
+            padding: 18px 16px;
+            border-radius: 14px;
+            margin-bottom: 18px;
         }
 
         .hero-banner h1 {
             font-size: 1.55rem;
+            line-height: 1.3;
         }
 
+        .hero-banner p {
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .hero-tag {
+            font-size: 0.65rem;
+            letter-spacing: 1.4px;
+        }
+
+        h2 {
+            font-size: 1.35rem !important;
+        }
+
+        h3 {
+            font-size: 1.15rem !important;
+        }
+
+        div[data-testid="stForm"] {
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        div[data-testid="stMetric"] {
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        div[data-testid="stMetricLabel"] {
+            font-size: 0.8rem !important;
+        }
+
+        div[data-testid="stMetricValue"] {
+            font-size: 1.35rem !important;
+        }
+
+        div[data-testid="stTabs"] button[role="tab"] {
+            padding: 8px 7px;
+            font-size: 0.78rem;
+        }
+
+        .stButton > button,
+        .stDownloadButton > button,
+        div[data-testid="stFormSubmitButton"] button {
+            min-height: 44px;
+            width: 100%;
+        }
+
+        div[data-testid="stPlotlyChart"] {
+            overflow-x: auto;
+        }
+    }
+
+    /* Extra-small phones */
+    @media (max-width: 400px) {
         .block-container {
-            padding-top: 1rem;
+            padding-left: 0.55rem;
+            padding-right: 0.55rem;
+        }
+
+        .hero-banner h1 {
+            font-size: 1.35rem;
+        }
+
+        div[data-testid="stTabs"] button[role="tab"] {
+            font-size: 0.70rem;
+            padding: 7px 4px;
         }
     }
     </style>
@@ -285,7 +488,9 @@ div[data-testid="stAlert"] div {
 st.markdown(
     """
     <div class="hero-banner">
-        <div class="hero-tag">✦ NEXT-GEN MACHINE LEARNING LAB ✦</div>
+        <div class="hero-tag">
+            ✦ NEXT-GEN MACHINE LEARNING LAB ✦
+        </div>
         <h1>🧪 Wine Quality Explorer</h1>
         <p>
             Decode wine chemistry, explore data patterns, and predict
@@ -347,7 +552,7 @@ with st.sidebar:
     )
 
     st.divider()
-    st.caption("⚡ Powered by Python · Streamlit · Random Forest")
+    st.caption("⚡ Python · Streamlit · Random Forest")
 
 # --------------------------------------------------
 # NAVIGATION TABS
@@ -477,14 +682,8 @@ with tab_predict:
             "Estimated quality score",
             f"{prediction:.2f} / 10",
         )
-        c2.metric(
-            "Rounded score",
-            str(rounded_score),
-        )
-        c3.metric(
-            "Estimated grade",
-            grade,
-        )
+        c2.metric("Rounded score", str(rounded_score))
+        c3.metric("Estimated grade", grade)
 
         st.success("Prediction saved to the database.")
 
@@ -551,6 +750,8 @@ with tab_explore:
                 legend_title_text="Wine color",
                 title_font_color="#d8b4fe",
                 font_color="#e4e8ff",
+                autosize=True,
+                margin=dict(l=10, r=10, t=55, b=10),
             )
 
             st.plotly_chart(fig, use_container_width=True)
@@ -578,6 +779,8 @@ with tab_explore:
                 plot_bgcolor="rgba(12,16,35,0.65)",
                 title_font_color="#d8b4fe",
                 font_color="#e4e8ff",
+                autosize=True,
+                margin=dict(l=10, r=10, t=55, b=10),
             )
 
             st.plotly_chart(fig, use_container_width=True)
@@ -618,6 +821,8 @@ with tab_explore:
             plot_bgcolor="rgba(12,16,35,0.65)",
             title_font_color="#d8b4fe",
             font_color="#e4e8ff",
+            autosize=True,
+            margin=dict(l=10, r=10, t=55, b=10),
         )
 
         st.plotly_chart(fig, use_container_width=True)
@@ -675,6 +880,8 @@ with tab_history:
             plot_bgcolor="rgba(12,16,35,0.65)",
             title_font_color="#d8b4fe",
             font_color="#e4e8ff",
+            autosize=True,
+            margin=dict(l=10, r=10, t=55, b=10),
         )
 
         st.plotly_chart(fig, use_container_width=True)
@@ -697,24 +904,24 @@ with tab_about:
         ### 🧠 How the application works
 
         **01 — Dataset preparation**
-        
+
         Loads and combines the red and white wine chemistry records.
 
         **02 — Feature processing**
-        
+
         Uses 11 numeric physicochemical measurements as model inputs.
 
         **03 — Machine learning**
-        
+
         A Random Forest regression model estimates quality scores
         from patterns learned in the training data.
 
         **04 — Model evaluation**
-        
-        MAE and R² help summarize model performance on held-out data.
+
+        MAE and R² summarize model performance on held-out data.
 
         **05 — Prediction history**
-        
+
         Predictions are saved to SQLite for later review.
 
         ---
@@ -728,7 +935,6 @@ with tab_about:
     )
 
     st.markdown("### 🔬 Model input features")
-
     st.write(", ".join(FEATURES))
 
     st.markdown("### 📚 Dataset source")
